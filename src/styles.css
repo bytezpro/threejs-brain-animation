@@ -1,0 +1,14 @@
+#app {
+  height: 100%;
+  width: 100%;
+}
+
+#app canvas {
+  opacity: 0;
+  outline: none;
+  transition: 1s opacity;
+}
+
+html.model-loaded #app canvas {
+  opacity: 1;
+}
