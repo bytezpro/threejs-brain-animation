@@ -1,6 +1,6 @@
 {
   "name": "threejs-brain-animation",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A React component for rendering interactive 3D brain animations using Three.js.",
   "author": "Bytez",
   "license": "MIT",
@@ -72,6 +72,11 @@
   "peerDependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bytezpro/threejs-brain-animation"
+  },
+  "homepage": "https://github.com/bytezpro/threejs-brain-animation"
 }
 
