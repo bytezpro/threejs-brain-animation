@@ -48,8 +48,6 @@ const App = () => {
   );
 };
 export default App;
-
-export default MyBrainViewer;
 ```
 
 **Note:** Currently, this component may not fully support React Strict Mode. If you encounter issues, try disabling Strict Mode by removing the `<React.StrictMode>` wrapper from your application until we release an updated version.
