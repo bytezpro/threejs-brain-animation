@@ -13,12 +13,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "declaration": true,
+    "noEmit": false,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "outDir": "./dist",
     "declarationDir": "./dist"
   },
   "include": ["src"],
   "exclude": ["node_modules"]
 }
-

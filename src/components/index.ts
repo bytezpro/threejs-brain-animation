@@ -1,1 +1,1 @@
-export { default as Brain } from "./Brain";
+export { default as Brain } from './Brain';

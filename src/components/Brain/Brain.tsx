@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   Scene,
   WebGLRenderer,
@@ -14,21 +14,22 @@ import {
   LoadingManager,
   Mesh,
   BufferGeometry,
-} from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import Stats from "stats.js";
-import gsap from "gsap";
+} from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import Stats from 'stats.js';
+import gsap from 'gsap';
+import Worker from 'worker-loader!./worker';
 
-import vertexShader from "../../shaders/brain.vertex.glsl";
-import fragmentShader from "../../shaders/brain.fragment.glsl";
-import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
+import vertexShader from '../../shaders/brain.vertex.glsl';
+import fragmentShader from '../../shaders/brain.fragment.glsl';
+import { InstancedUniformsMesh } from 'three-instanced-uniforms-mesh';
 
 interface BrainAnimationProps {
   width: number;
   height: number;
 }
 
-const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
+const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, height }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<Stats | null>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -44,13 +45,8 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
   });
 
   const colors = useMemo(
-    () => [
-      new Color(0x963cbd),
-      new Color(0xff6f61),
-      new Color(0xc5299b),
-      new Color(0xfeae51),
-    ],
-    []
+    () => [new Color(0x963cbd), new Color(0xff6f61), new Color(0xc5299b), new Color(0xfeae51)],
+    [],
   );
 
   const uniformsRef = useRef({
@@ -64,22 +60,15 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
   const pointRef = useRef(new Vector3());
   const loadingManagerRef = useRef<LoadingManager | null>(null);
   const gltfLoaderRef = useRef<GLTFLoader | null>(null);
+  const workerRef = useRef<Worker | null>(null);
 
   const initThreeApp = useCallback(() => {
     if (isInitializedRef.current || threeRef.current.renderer) return;
 
     isInitializedRef.current = true;
 
-    statsRef.current = new Stats();
-    // document.body.appendChild(statsRef.current.dom);
-
     threeRef.current.scene = new Scene();
-    threeRef.current.camera = new PerspectiveCamera(
-      75,
-      width / height,
-      0.1,
-      100
-    );
+    threeRef.current.camera = new PerspectiveCamera(75, width / height, 0.1, 100);
     threeRef.current.camera.position.set(0, 0, 1.2);
 
     threeRef.current.renderer = new WebGLRenderer({
@@ -92,15 +81,13 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
     }
 
     threeRef.current.renderer.setSize(width, height);
-    threeRef.current.renderer.setPixelRatio(
-      Math.min(1.5, window.devicePixelRatio)
-    );
+    threeRef.current.renderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio));
 
     threeRef.current.raycaster = new Raycaster();
 
     loadingManagerRef.current = new LoadingManager();
     loadingManagerRef.current.onLoad = () => {
-      document.documentElement.classList.add("model-loaded");
+      document.documentElement.classList.add('model-loaded');
     };
     gltfLoaderRef.current = new GLTFLoader(loadingManagerRef.current);
 
@@ -130,22 +117,15 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
   }, []);
 
   const render = useCallback(() => {
-    if (
-      threeRef.current.renderer &&
-      threeRef.current.scene &&
-      threeRef.current.camera
-    ) {
-      threeRef.current.renderer.render(
-        threeRef.current.scene,
-        threeRef.current.camera
-      );
+    if (threeRef.current.renderer && threeRef.current.scene && threeRef.current.camera) {
+      threeRef.current.renderer.render(threeRef.current.scene, threeRef.current.camera);
     }
   }, []);
 
   const loadModel = useCallback(() => {
     return new Promise<void>((resolve) => {
       if (gltfLoaderRef.current && threeRef.current.scene) {
-        gltfLoaderRef.current.load("./static/brain.glb", (gltf) => {
+        gltfLoaderRef.current.load('./static/brain.glb', (gltf) => {
           const brainMesh = gltf.scene.children[0] as Mesh;
           threeRef.current.brain = brainMesh;
 
@@ -167,41 +147,33 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
             threeRef.current.instancedMesh = new InstancedUniformsMesh(
               geometry,
               material,
-              brainMesh.geometry.attributes.position.count
+              brainMesh.geometry.attributes.position.count,
             );
             threeRef.current.scene!.add(threeRef.current.instancedMesh);
 
             const dummy = new Object3D();
             const positions = brainMesh.geometry.attributes.position.array;
             for (let i = 0; i < positions.length; i += 3) {
-              dummy.position.set(
-                positions[i + 0],
-                positions[i + 1],
-                positions[i + 2]
-              );
+              dummy.position.set(positions[i + 0], positions[i + 1], positions[i + 2]);
 
               dummy.updateMatrix();
 
               threeRef.current.instancedMesh.setMatrixAt(i / 3, dummy.matrix);
 
               threeRef.current.instancedMesh.setUniformAt(
-                "uRotation",
+                'uRotation',
                 i / 3,
-                MathUtils.randFloat(-1, 1)
+                MathUtils.randFloat(-1, 1),
               );
 
               threeRef.current.instancedMesh.setUniformAt(
-                "uSize",
+                'uSize',
                 i / 3,
-                MathUtils.randFloat(0.3, 3)
+                MathUtils.randFloat(0.3, 3),
               );
 
               const colorIndex = MathUtils.randInt(0, colors.length - 1);
-              threeRef.current.instancedMesh.setUniformAt(
-                "uColor",
-                i / 3,
-                colors[colorIndex]
-              );
+              threeRef.current.instancedMesh.setUniformAt('uColor', i / 3, colors[colorIndex]);
             }
           }
 
@@ -212,13 +184,13 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
   }, [colors]);
 
   const addListeners = useCallback(() => {
-    window.addEventListener("resize", onResize, { passive: true });
-    window.addEventListener("mousemove", onMousemove, { passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
+    window.addEventListener('mousemove', onMousemove, { passive: true });
   }, []);
 
   const removeListeners = useCallback(() => {
-    window.removeEventListener("resize", onResize);
-    window.removeEventListener("mousemove", onMousemove);
+    window.removeEventListener('resize', onResize);
+    window.removeEventListener('mousemove', onMousemove);
   }, []);
 
   const onMousemove = useCallback(
@@ -243,14 +215,9 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
         duration: 0.5,
       });
 
-      threeRef.current.raycaster.setFromCamera(
-        mouseRef.current,
-        threeRef.current.camera
-      );
+      threeRef.current.raycaster.setFromCamera(mouseRef.current, threeRef.current.camera);
 
-      intersectsRef.current = threeRef.current.raycaster.intersectObject(
-        threeRef.current.brain
-      );
+      intersectsRef.current = threeRef.current.raycaster.intersectObject(threeRef.current.brain);
 
       if (intersectsRef.current.length === 0) {
         // Mouseleave
@@ -274,18 +241,14 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
           onUpdate: () => {
             if (threeRef.current.instancedMesh) {
               for (let i = 0; i < threeRef.current.instancedMesh.count; i++) {
-                threeRef.current.instancedMesh.setUniformAt(
-                  "uPointer",
-                  i,
-                  pointRef.current
-                );
+                threeRef.current.instancedMesh.setUniformAt('uPointer', i, pointRef.current);
               }
             }
           },
         });
       }
     },
-    [width, height]
+    [width, height],
   );
 
   const animateHoverUniform = useCallback((value: number) => {
@@ -295,11 +258,7 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
       onUpdate: () => {
         if (threeRef.current.instancedMesh) {
           for (let i = 0; i < threeRef.current.instancedMesh.count; i++) {
-            threeRef.current.instancedMesh.setUniformAt(
-              "uHover",
-              i,
-              uniformsRef.current.uHover
-            );
+            threeRef.current.instancedMesh.setUniformAt('uHover', i, uniformsRef.current.uHover);
           }
         }
       },
@@ -323,10 +282,8 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
     initThreeApp();
 
     return () => {
-      if (threeRef.current.renderer) {
-        threeRef.current.renderer.dispose();
-        threeRef.current.renderer = null;
-      }
+      if (threeRef.current.renderer) return;
+
       if (animationFrameRef.current !== null) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -335,8 +292,26 @@ const BrainAnimation: React.FC<BrainAnimationProps> = ({ width, height }) => {
     };
   }, [initThreeApp, removeListeners]);
 
-  return <div ref={containerRef} style={{ overflow: "hidden" }} />;
-};
+  useEffect(() => {
+    workerRef.current = new Worker();
+    workerRef.current.onmessage = (event) => {
+      console.log('Received from worker:', event.data);
+    };
+
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+      }
+    };
+  }, []);
+
+  const performHeavyComputation = useCallback((data: unknown) => {
+    if (workerRef.current) {
+      workerRef.current.postMessage(data);
+    }
+  }, []);
+
+  return <div ref={containerRef} style={{ overflow: 'hidden' }} />;
+});
 
 export default BrainAnimation;
-

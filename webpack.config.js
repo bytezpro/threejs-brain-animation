@@ -1,87 +1,101 @@
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-  mode: "production",
+  mode: 'production',
   entry: {
-    main: "./src/index.tsx",
+    main: './src/index.ts',
   },
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
-    libraryTarget: "umd",
-    library: "ThreeJsBrainAnimation",
-    globalObject: "this",
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'index.js',
+    libraryTarget: 'umd',
+    library: 'ThreeJsBrainAnimation',
+    globalObject: 'this',
+    publicPath: '/',
   },
   externals: {
     react: {
-      commonjs: "react",
-      commonjs2: "react",
-      amd: "react",
-      root: "React",
+      commonjs: 'react',
+      commonjs2: 'react',
+      amd: 'react',
+      root: 'React',
     },
-    "react-dom": {
-      commonjs: "react-dom",
-      commonjs2: "react-dom",
-      amd: "react-dom",
-      root: "ReactDOM",
+    'react-dom': {
+      commonjs: 'react-dom',
+      commonjs2: 'react-dom',
+      amd: 'react-dom',
+      root: 'ReactDOM',
     },
-    three: "three",
+    three: 'three',
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
+    extensions: ['.ts', '.tsx'],
     alias: {
-      Utils: path.resolve(__dirname, "./src/"),
+      Utils: path.resolve(__dirname, './src/'),
     },
   },
   module: {
     rules: [
       {
         test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ["@babel/preset-env", "@babel/preset-react"],
+            presets: ['@babel/preset-env', '@babel/preset-react'],
           },
         },
       },
       {
-        test: /\.(glsl|vs|fs)$/,
+        test: /\.(glsl|vs|fs|glb)$/,
         exclude: /node_modules/,
-        use: ["raw-loader", "glslify-loader"],
+        use: ['raw-loader', 'glslify-loader'],
+      },
+      {
+        test: /\.glb$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[hash].[ext]',
+            },
+          },
+        ],
       },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: "ts-loader",
+        use: 'ts-loader',
       },
     ],
   },
-  resolve: {
-    extensions: [".tsx", ".ts", ".js"],
-  },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "[name].css",
+      filename: '[name].css',
     }),
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, "src/static"),
-          to: path.resolve(__dirname, "dist/static"),
+          from: path.resolve(__dirname, 'src/static'),
+          to: path.resolve(__dirname, 'dist/static'),
         },
         {
-          from: path.resolve(__dirname, "dist/*.d.ts"),
-          to: path.resolve(__dirname, "dist/[name][ext]"),
+          from: path.resolve(__dirname, 'dist/*.d.ts'),
+          to: path.resolve(__dirname, 'dist/[name][ext]'),
         },
       ],
     }),
   ],
+  optimization: {
+    minimizer: [new TerserPlugin()],
+    usedExports: true,
+    sideEffects: true,
+  },
 };
-

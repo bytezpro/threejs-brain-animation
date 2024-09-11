@@ -25,11 +25,11 @@ yarn add threejs-brain-animation
 Here's a basic example of how to use the Brain3D component:
 
 ```jsx
-import React from "react";
-import { Brain } from "threejs-brain-animation";
+import React from 'react';
+import { Brain } from 'threejs-brain-animation';
 
 // use default style or you can customize
-import "threejs-brain-animation/dist/main.css";
+import 'threejs-brain-animation/dist/main.css';
 
 const App = () => {
   const width = 1000;
@@ -37,12 +37,13 @@ const App = () => {
   return (
     <div
       style={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}>
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
       <Brain width={width} height={height} />
     </div>
   );
@@ -50,10 +51,27 @@ const App = () => {
 export default App;
 ```
 
-**Note:** Currently, this component may not fully support React Strict Mode. If you encounter issues, try disabling Strict Mode by removing the `<React.StrictMode>` wrapper from your application until we release an updated version.
+## API
+
+| Prop   | Type   | Default | Description                |
+| ------ | ------ | ------- | -------------------------- |
+| width  | number | 1000    | Width of the brain canvas  |
+| height | number | 500     | Height of the brain canvas |
+
+## Development
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start development server: `npm start`
+4. Build the library: `npm run build`
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+**Note:** See demo for more details.
 
 For more detailed usage instructions and API documentation, please refer to our [documentation](link-to-your-documentation).
-
 
 ## Requirements
 
@@ -75,4 +93,3 @@ If you encounter any issues or have questions, please file an issue on our [GitH
 ## Acknowledgements
 
 We would like to thank the neuroimaging community for their invaluable input and support in the development of this component.
-
