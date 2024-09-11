@@ -1,6 +1,6 @@
 {
   "name": "threejs-brain-animation",
-  "version": "1.2.6",
+  "version": "1.2.8",
   "description": "A React component for rendering interactive 3D brain animations using Three.js.",
   "author": "Bytez",
   "license": "MIT",
