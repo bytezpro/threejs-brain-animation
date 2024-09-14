@@ -59,12 +59,13 @@ module.exports = {
         use: ['raw-loader', 'glslify-loader'],
       },
       {
-        test: /\.glb$/,
+        test: /\.(glb|gltf)$/,
+        exclude: /node_modules/,
         use: [
           {
             loader: 'file-loader',
             options: {
-              name: '[name].[hash].[ext]',
+              outputPath: 'static/models/',
             },
           },
         ],

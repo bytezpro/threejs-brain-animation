@@ -18,7 +18,6 @@ import {
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Stats from 'stats.js';
 import gsap from 'gsap';
-import Worker from 'worker-loader!./worker';
 
 import vertexShader from '../../shaders/brain.vertex.glsl';
 import fragmentShader from '../../shaders/brain.fragment.glsl';
@@ -60,7 +59,6 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
   const pointRef = useRef(new Vector3());
   const loadingManagerRef = useRef<LoadingManager | null>(null);
   const gltfLoaderRef = useRef<GLTFLoader | null>(null);
-  const workerRef = useRef<Worker | null>(null);
 
   const initThreeApp = useCallback(() => {
     if (isInitializedRef.current || threeRef.current.renderer) return;
@@ -125,7 +123,7 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
   const loadModel = useCallback(() => {
     return new Promise<void>((resolve) => {
       if (gltfLoaderRef.current && threeRef.current.scene) {
-        gltfLoaderRef.current.load('./static/brain.glb', (gltf) => {
+        gltfLoaderRef.current.load('./brain.glb', (gltf) => {
           const brainMesh = gltf.scene.children[0] as Mesh;
           threeRef.current.brain = brainMesh;
 
@@ -292,26 +290,7 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
     };
   }, [initThreeApp, removeListeners]);
 
-  useEffect(() => {
-    workerRef.current = new Worker();
-    workerRef.current.onmessage = (event) => {
-      console.log('Received from worker:', event.data);
-    };
-
-    return () => {
-      if (workerRef.current) {
-        workerRef.current.terminate();
-      }
-    };
-  }, []);
-
-  const performHeavyComputation = useCallback((data: unknown) => {
-    if (workerRef.current) {
-      workerRef.current.postMessage(data);
-    }
-  }, []);
-
-  return <div ref={containerRef} style={{ overflow: 'hidden' }} />;
+  return <div ref={containerRef} />;
 });
 
 export default BrainAnimation;
