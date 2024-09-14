@@ -53,6 +53,8 @@ const App = () => {
 export default App;
 ```
 
+**Note** Download our brain.glb file in example_project/public and put it in your nextjs project public folder
+
 ## API
 
 | Prop   | Type   | Default | Description                |
