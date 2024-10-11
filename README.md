@@ -34,7 +34,7 @@ import { Brain } from 'threejs-brain-animation';
 import 'threejs-brain-animation/dist/main.css';
 
 const App = () => {
-  const width = 1000;
+  const width = 500;
   const height = 500;
   return (
     <div
@@ -52,8 +52,6 @@ const App = () => {
 };
 export default App;
 ```
-
-**Note** Download our brain.glb file in example_project/public and put it in your nextjs project public folder
 
 ## API
 
@@ -75,7 +73,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 **Note:** See demo for more details.
 
-For more detailed usage instructions and API documentation, please refer to our [documentation](link-to-your-documentation).
+For more detailed usage instructions and API documentation, please refer to our [documentation](https://example-brain-animation.vercel.app/).
 
 ## Requirements
 

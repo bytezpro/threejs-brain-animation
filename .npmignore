@@ -8,7 +8,6 @@ src/
 .eslint.config.js
 .prettierrc
 tsconfig.json
-webpack.config.js
 
 # Ignore lock files (optional, based on your project preferences)
 package-lock.json
@@ -19,3 +18,5 @@ package-lock.json
 
 # Ignore npm ignore file itself
 .npmignore
+
+example_project/

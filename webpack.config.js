@@ -14,7 +14,7 @@ module.exports = {
     libraryTarget: 'umd',
     library: 'ThreeJsBrainAnimation',
     globalObject: 'this',
-    publicPath: '/',
+    publicPath: '/dist/',
   },
   externals: {
     react: {
@@ -54,18 +54,18 @@ module.exports = {
         },
       },
       {
-        test: /\.(glsl|vs|fs|glb)$/,
+        test: /\.(glsl|vs|fs)$/,
         exclude: /node_modules/,
         use: ['raw-loader', 'glslify-loader'],
       },
       {
         test: /\.(glb|gltf)$/,
-        exclude: /node_modules/,
         use: [
           {
-            loader: 'file-loader',
+            loader: 'url-loader',
             options: {
-              outputPath: 'static/models/',
+              limit: Infinity, // Đảm bảo rằng file sẽ được inline hoàn toàn
+              encoding: 'base64', // Convert file thành chuỗi base64
             },
           },
         ],

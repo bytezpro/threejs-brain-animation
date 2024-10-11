@@ -22,6 +22,7 @@ import gsap from 'gsap';
 import vertexShader from '../../shaders/brain.vertex.glsl';
 import fragmentShader from '../../shaders/brain.fragment.glsl';
 import { InstancedUniformsMesh } from 'three-instanced-uniforms-mesh';
+import brainModel from '../../static/brain.glb';
 
 interface BrainAnimationProps {
   width: number;
@@ -123,7 +124,8 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
   const loadModel = useCallback(() => {
     return new Promise<void>((resolve) => {
       if (gltfLoaderRef.current && threeRef.current.scene) {
-        gltfLoaderRef.current.load('./brain.glb', (gltf) => {
+        const srcPath = brainModel;
+        gltfLoaderRef.current.load(srcPath, (gltf) => {
           const brainMesh = gltf.scene.children[0] as Mesh;
           threeRef.current.brain = brainMesh;
 
