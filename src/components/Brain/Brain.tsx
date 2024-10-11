@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 import {
   Scene,
   WebGLRenderer,
@@ -24,16 +24,15 @@ import fragmentShader from '../../shaders/brain.fragment.glsl';
 import { InstancedUniformsMesh } from 'three-instanced-uniforms-mesh';
 import brainModel from '../../static/brain.glb';
 
-interface BrainAnimationProps {
-  width: number;
-  height: number;
-}
+interface BrainAnimationProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, height }) => {
+const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ ...props }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<Stats | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const isInitializedRef = useRef(false);
+
+  const [size, setSize] = useState({ width: 500, height: 500 });
 
   const threeRef = useRef({
     scene: null as Scene | null,
@@ -67,7 +66,7 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
     isInitializedRef.current = true;
 
     threeRef.current.scene = new Scene();
-    threeRef.current.camera = new PerspectiveCamera(75, width / height, 0.1, 100);
+    threeRef.current.camera = new PerspectiveCamera(75, size.width / size.height, 0.1, 100);
     threeRef.current.camera.position.set(0, 0, 1.2);
 
     threeRef.current.renderer = new WebGLRenderer({
@@ -79,8 +78,10 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
       containerRef.current.appendChild(threeRef.current.renderer.domElement);
     }
 
-    threeRef.current.renderer.setSize(width, height);
+    threeRef.current.renderer.setSize(size.width, size.height);
     threeRef.current.renderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio));
+
+    onResize();
 
     threeRef.current.raycaster = new Raycaster();
 
@@ -96,7 +97,7 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
       addListeners();
       animate();
     });
-  }, [width, height]);
+  }, [size.width, size.height]);
 
   const animate = useCallback(() => {
     if (!isInitializedRef.current) return;
@@ -204,8 +205,8 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
         return;
 
       const rect = containerRef.current.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / width) * 2 - 1;
-      const y = -((e.clientY - rect.top) / height) * 2 + 1;
+      const x = ((e.clientX - rect.left) / size.width) * 2 - 1;
+      const y = -((e.clientY - rect.top) / size.height) * 2 + 1;
 
       mouseRef.current.set(x, y);
 
@@ -248,7 +249,7 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
         });
       }
     },
-    [width, height],
+    [size.width, size.height],
   );
 
   const animateHoverUniform = useCallback((value: number) => {
@@ -271,12 +272,12 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
 
   const onResize = useCallback(() => {
     if (threeRef.current.camera && threeRef.current.renderer) {
-      threeRef.current.camera.aspect = width / height;
+      threeRef.current.camera.aspect = size.width / size.height;
       threeRef.current.camera.updateProjectionMatrix();
-      threeRef.current.renderer.setSize(width, height);
+      threeRef.current.renderer.setSize(size.width, size.height);
       checkMobile();
     }
-  }, [width, height]);
+  }, [size.width, size.height]);
 
   useEffect(() => {
     initThreeApp();
@@ -292,7 +293,31 @@ const BrainAnimation: React.FC<BrainAnimationProps> = React.memo(({ width, heigh
     };
   }, [initThreeApp, removeListeners]);
 
-  return <div ref={containerRef} />;
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (container) {
+      const observer = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          const { width, height } = entry.contentRect;
+          setSize({ width, height });
+          onResize();
+        }
+      });
+
+      observer.observe(container);
+
+      return () => {
+        observer.unobserve(container);
+      };
+    }
+  }, [onResize]);
+
+  useEffect(() => {
+    onResize();
+  }, [size, onResize]);
+
+  return <div {...props} ref={containerRef}></div>;
 });
 
 export default BrainAnimation;
