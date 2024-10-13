@@ -27,29 +27,22 @@ yarn add threejs-brain-animation
 Here's a basic example of how to use the Brain3D component:
 
 ```jsx
-import React from 'react';
 import { Brain } from 'threejs-brain-animation';
 
-// use default style or you can customize
-import 'threejs-brain-animation/dist/main.css';
-
 const App = () => {
-  const width = 500;
-  const height = 500;
-  return (
-    <div
-      style={{
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Brain width={width} height={height} />
-    </div>
-  );
+  <div
+    style={{
+      width: '100vw',
+      height: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+    <Brain style={{ width: '600px', height: '600px' }} />
+  </div>;
 };
+
 export default App;
 ```
 
