@@ -1,6 +1,6 @@
 # Brain 3D Component UI
 
-![demo](https://github.com/th2002/example-brain-animation/blob/main/public/static/demo.gif)
+![demo](https://github.com/bytezpro/example-brain-animation/blob/main/public/demo.gif)
 
 Brain 3D Component UI is a powerful and flexible React component for rendering 3D brain visualizations. This package provides an easy-to-use interface for integrating complex brain imaging data into your web applications.
 
